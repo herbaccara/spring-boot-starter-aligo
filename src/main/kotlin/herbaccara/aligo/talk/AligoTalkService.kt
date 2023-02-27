@@ -77,11 +77,13 @@ class AligoTalkService(
         }
     }
 
-    private fun <T> recover(block: () -> T): T {
+    // FIXME: 인증 실패 시 토큰 유효 기간 기본값 처리 필요
+    private fun <T> recover(duration: Duration = Duration.ofSeconds(1000), block: () -> T): T {
         return runCatching { block() }
             .recoverCatching { exception ->
                 // FIXME : -99 가 토큰 만료인지 확인 해야 한다.
                 if (exception is AligoResponseException && exception.resultCode == -99) {
+                    token(duration)
                     block()
                 }
                 throw exception

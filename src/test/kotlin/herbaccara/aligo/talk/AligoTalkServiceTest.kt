@@ -15,7 +15,7 @@ import java.time.Duration
     ]
 )
 @TestPropertySource(locations = ["classpath:application.yml"])
-@Disabled
+//@Disabled
 class AligoTalkServiceTest {
 
     @Autowired
@@ -29,6 +29,12 @@ class AligoTalkServiceTest {
     fun token() {
         val token = aligoTalkService.token(Duration.ofDays(30))
         println(token)
+    }
+
+    @Test
+    fun category() {
+        val category = aligoTalkService.category()
+        println(category)
     }
 
     @Test
