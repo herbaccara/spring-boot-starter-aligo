@@ -2,7 +2,9 @@ package herbaccara.aligo.sms
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import herbaccara.aligo.sms.exception.AligoSmsResponseException
 import herbaccara.aligo.sms.form.ListForm
 import herbaccara.aligo.sms.form.SendForm
 import herbaccara.aligo.sms.form.SendMassForm
@@ -50,7 +52,12 @@ class AligoSmsService(
         val resultCode = json["result_code"].asInt()
         val message = json["message"].asText()
         if (resultCode < 0) {
-            throw RuntimeException(message)
+            throw AligoSmsResponseException(resultCode, message)
+        }
+
+        (json as ObjectNode).apply {
+            remove("result_code")
+            remove("message")
         }
 
         return objectMapper.readValue(json.toString())
