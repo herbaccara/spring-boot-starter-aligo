@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  herbaccara.boot.autoconfigure.aligo.sms.AligoSmsAutoConfiguration
+  herbaccara.boot.autoconfigure.aligo.sms.AligoSmsAutoConfiguration,\
+  herbaccara.boot.autoconfigure.aligo.alimtalk.AligoAlimTalkAutoConfiguration

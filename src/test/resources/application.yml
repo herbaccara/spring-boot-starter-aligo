@@ -4,6 +4,11 @@ aligo:
     key:
     user-id:
     fail-on-unknown-properties: true
+  alimtalk:
+    enabled: true
+    api-key:
+    user-id:
+    fail-on-unknown-properties: true
 logging:
   level:
     root: info
