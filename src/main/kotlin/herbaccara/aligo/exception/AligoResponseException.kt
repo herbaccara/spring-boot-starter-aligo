@@ -1,6 +1,6 @@
-package herbaccara.aligo.sms.exception
+package herbaccara.aligo.exception
 
-class AligoSmsResponseException(
+class AligoResponseException(
     val resultCode: Int,
     override val message: String
 ) : RuntimeException(message)
