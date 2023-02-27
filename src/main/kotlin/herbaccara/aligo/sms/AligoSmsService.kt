@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import herbaccara.aligo.Constants
 import herbaccara.aligo.exception.AligoResponseException
 import herbaccara.aligo.sms.form.ListForm
 import herbaccara.aligo.sms.form.SendForm
@@ -19,20 +20,16 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class AligoSmsService(
     private val restTemplate: RestTemplate,
     private val objectMapper: ObjectMapper,
     private val properties: AligoSmsProperties
 ) {
-    private val localDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-    private val localTimeFormatter = DateTimeFormatter.ofPattern("HHmm")
-
     private inline fun <reified T> postForObject(
         uri: String,
         contentType: MediaType = MediaType.APPLICATION_FORM_URLENCODED,
-        block: (map: MultiValueMap<String, Any>) -> Unit
+        block: (map: MultiValueMap<String, Any>) -> Unit = { _ -> }
     ): T {
         val headers = HttpHeaders().apply {
             this.contentType = contentType
@@ -84,8 +81,8 @@ class AligoSmsService(
                 val (localDate, localTime) = form.reservationDateTIme.let {
                     it.toLocalDate() to it.toLocalTime()
                 }
-                map.add("rdate", localDateFormatter.format(localDate))
-                map.add("rtime", localTimeFormatter.format(localTime))
+                map.add("rdate", Constants.localDateFormatter.format(localDate))
+                map.add("rtime", Constants.localTimeFormatter.format(localTime))
             }
             form.images.forEachIndexed { i, f ->
                 map.add("image${i + 1}", FileSystemResource(f))
@@ -115,8 +112,8 @@ class AligoSmsService(
                 val (localDate, localTime) = form.reservationDateTIme.let {
                     it.toLocalDate() to it.toLocalTime()
                 }
-                map.add("rdate", localDateFormatter.format(localDate))
-                map.add("rtime", localTimeFormatter.format(localTime))
+                map.add("rdate", Constants.localDateFormatter.format(localDate))
+                map.add("rtime", Constants.localTimeFormatter.format(localTime))
             }
             form.images.forEachIndexed { i, f ->
                 map.add("image${i + 1}", FileSystemResource(f))
@@ -138,7 +135,7 @@ class AligoSmsService(
             map.add("page", form.page)
             map.add("page_size", form.pageSize)
             if (form.startDate != null) {
-                map.add("start_date", localDateFormatter.format(form.startDate))
+                map.add("start_date", Constants.localDateFormatter.format(form.startDate))
             }
             if (form.limitDay != null) {
                 map.add("limit_day", form.limitDay)
@@ -163,8 +160,7 @@ class AligoSmsService(
     fun remain(): JsonNode {
         val uri = "/remain/"
 
-        return postForObject(uri) {
-        }
+        return postForObject(uri)
     }
 
     fun cancel(mid: Int): JsonNode {
