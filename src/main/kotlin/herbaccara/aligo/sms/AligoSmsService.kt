@@ -18,7 +18,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
-import java.lang.RuntimeException
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class AligoSmsService(
@@ -47,7 +47,9 @@ class AligoSmsService(
 
         val httpEntity = HttpEntity(form, headers)
 
-        val json = restTemplate.postForObject<JsonNode>(uri, httpEntity)
+        // NOTE : 리턴값은 json 형식이긴한데.. content-type 이 text/html; charset=UTF-8 이다 -_-...
+        val jsonText = restTemplate.postForObject<String>(uri, httpEntity)
+        val json = objectMapper.readValue<JsonNode>(jsonText)
 
         val resultCode = json["result_code"].asInt()
         val message = json["message"].asText()
@@ -64,7 +66,7 @@ class AligoSmsService(
     }
 
     fun send(form: SendForm): JsonNode {
-        val uri = "/send"
+        val uri = "/send/"
 
         return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
             map.add("sender", form.sender)
@@ -95,7 +97,7 @@ class AligoSmsService(
     }
 
     fun sendMass(form: SendMassForm): JsonNode {
-        val uri = "/send_mass"
+        val uri = "/send_mass/"
 
         return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
             map.add("sender", form.sender)
@@ -125,8 +127,12 @@ class AligoSmsService(
         }
     }
 
+    fun list(page: Int = 1, pageSize: Int = 30, startDate: LocalDate? = null, limitDay: Int? = null): JsonNode {
+        return list(ListForm(page, pageSize, startDate, limitDay))
+    }
+
     fun list(form: ListForm): JsonNode {
-        val uri = "/list"
+        val uri = "/list/"
 
         return postForObject(uri) { map ->
             map.add("page", form.page)
@@ -140,8 +146,12 @@ class AligoSmsService(
         }
     }
 
+    fun smsList(mid: Int, page: Int = 1, pageSize: Int = 30): JsonNode {
+        return smsList(mid, page, pageSize)
+    }
+
     fun smsList(form: SmsListForm): JsonNode {
-        val uri = "/sms_list"
+        val uri = "/sms_list/"
 
         return postForObject(uri) { map ->
             map.add("mid", form.mid)
@@ -151,14 +161,14 @@ class AligoSmsService(
     }
 
     fun remain(): JsonNode {
-        val uri = "/remain"
+        val uri = "/remain/"
 
         return postForObject(uri) {
         }
     }
 
     fun cancel(mid: Int): JsonNode {
-        val uri = "/cancel"
+        val uri = "/cancel/"
 
         return postForObject(uri) { map ->
             map.add("mid", mid)

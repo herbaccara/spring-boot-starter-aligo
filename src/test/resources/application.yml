@@ -1,0 +1,10 @@
+aligo:
+  sms:
+    enabled: true
+    key: test_ck_LBa5PzR0Arnd2EYbgJo3vmYnNeDM
+    user-id: test_sk_O6BYq7GWPVvWanQ0gY4rNE5vbo1d
+    fail-on-unknown-properties: true
+logging:
+  level:
+    root: info
+    org.springframework.web: debug
