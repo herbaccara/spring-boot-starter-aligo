@@ -96,12 +96,16 @@ class AligoTalkService(
         }
     }
 
+    private fun String.plusId(): String {
+        return this.firstOrNull()?.let { if (it != '@') "@$this" else this } ?: throw IllegalArgumentException()
+    }
+
     fun profileAuth(plusId: String, phoneNumber: String): JsonNode {
         return recover {
             val uri = "/akv10/profile/auth/"
 
             postForObject(uri) { map ->
-                map.add("plusid", plusId)
+                map.add("plusid", plusId.plusId())
                 map.add("phonenumber", phoneNumber)
             }
         }
@@ -112,7 +116,7 @@ class AligoTalkService(
             val uri = "/akv10/profile/add/"
 
             postForObject(uri) { map ->
-                map.add("plusid", plusId)
+                map.add("plusid", plusId.plusId())
                 map.add("authnum", authNum)
                 map.add("phonenumber", phoneNumber)
                 map.add("categorycode", categoryCode)
@@ -126,7 +130,7 @@ class AligoTalkService(
 
             postForObject(uri) { map ->
                 if (plusId != null) {
-                    map.add("plusid", plusId)
+                    map.add("plusid", plusId.plusId())
                 }
                 if (senderKey != null) {
                     map.add("senderkey", senderKey)
