@@ -1,8 +1,8 @@
-package herbaccara.boot.autoconfigure.aligo.alimtalk
+package herbaccara.boot.autoconfigure.aligo.talk
 
 import org.springframework.boot.web.client.RestTemplateBuilder
 
-interface AligoAlimTalkRestTemplateBuilderCustomizer {
+interface AligoTalkRestTemplateBuilderCustomizer {
 
     fun customize(restTemplateBuilder: RestTemplateBuilder)
 }

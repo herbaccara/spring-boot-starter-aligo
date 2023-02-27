@@ -1,8 +1,8 @@
-package herbaccara.aligo.alimtalk.model.token
+package herbaccara.aligo.talk.model.token
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class AligoAlimTalkToken(
+data class AligoTalkToken(
     val token: String,
     @field:JsonProperty("urlencode")
     val urlEncode: String

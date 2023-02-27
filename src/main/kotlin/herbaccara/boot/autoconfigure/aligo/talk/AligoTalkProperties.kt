@@ -1,11 +1,11 @@
-package herbaccara.boot.autoconfigure.aligo.alimtalk
+package herbaccara.boot.autoconfigure.aligo.talk
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConfigurationProperties(prefix = "aligo.alimtalk")
+@ConfigurationProperties(prefix = "aligo.talk")
 @ConstructorBinding
-data class AligoAlimTalkProperties(
+data class AligoTalkProperties(
     val enabled: Boolean = true,
     val apiKey: String,
     val userId: String,

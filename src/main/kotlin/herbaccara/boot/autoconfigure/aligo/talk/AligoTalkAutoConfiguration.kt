@@ -1,11 +1,11 @@
-package herbaccara.boot.autoconfigure.aligo.alimtalk
+package herbaccara.boot.autoconfigure.aligo.talk
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import herbaccara.aligo.alimtalk.AligoAlimTalkService
-import herbaccara.aligo.alimtalk.store.AligoAlimTalkInMemoryTokenStore
-import herbaccara.aligo.alimtalk.store.AligoAlimTalkTokenStore
+import herbaccara.aligo.talk.AligoTalkService
+import herbaccara.aligo.talk.store.AligoTalkInMemoryTokenStore
+import herbaccara.aligo.talk.store.AligoTalkTokenStore
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -21,24 +21,24 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 @AutoConfiguration
-@EnableConfigurationProperties(AligoAlimTalkProperties::class)
-@ConditionalOnProperty(prefix = "aligo.alimtalk", value = ["enabled"], havingValue = "true")
-class AligoAlimTalkAutoConfiguration {
+@EnableConfigurationProperties(AligoTalkProperties::class)
+@ConditionalOnProperty(prefix = "aligo.talk", value = ["enabled"], havingValue = "true")
+class AligoTalkAutoConfiguration {
 
-    @Bean("aligoAlimTalkObjectMapper")
-    fun objectMapper(properties: AligoAlimTalkProperties): ObjectMapper {
+    @Bean("aligoTalkObjectMapper")
+    fun objectMapper(properties: AligoTalkProperties): ObjectMapper {
         return jacksonObjectMapper().apply {
             findAndRegisterModules()
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, properties.failOnUnknownProperties)
         }
     }
 
-    @Bean("aligoAlimTalkRestTemplate")
+    @Bean("aligoTalkRestTemplate")
     fun restTemplate(
-        properties: AligoAlimTalkProperties,
-        @Qualifier("aligoAlimTalkObjectMapper") objectMapper: ObjectMapper,
-        customizers: List<AligoAlimTalkRestTemplateBuilderCustomizer>,
-        interceptors: List<AligoAlimTalkClientHttpRequestInterceptor>
+        properties: AligoTalkProperties,
+        @Qualifier("aligoTalkObjectMapper") objectMapper: ObjectMapper,
+        customizers: List<AligoTalkRestTemplateBuilderCustomizer>,
+        interceptors: List<AligoTalkClientHttpRequestInterceptor>
     ): RestTemplate {
         return RestTemplateBuilder()
             .rootUri(properties.rootUri)
@@ -57,18 +57,18 @@ class AligoAlimTalkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(AligoAlimTalkTokenStore::class)
-    fun aligoAlimTalkTokenStore(): AligoAlimTalkTokenStore {
-        return AligoAlimTalkInMemoryTokenStore()
+    @ConditionalOnMissingBean(AligoTalkTokenStore::class)
+    fun aligoTalkTokenStore(): AligoTalkTokenStore {
+        return AligoTalkInMemoryTokenStore()
     }
 
     @Bean
-    fun aligoSmsService(
-        @Qualifier("aligoAlimTalkRestTemplate") restTemplate: RestTemplate,
-        @Qualifier("aligoAlimTalkObjectMapper") objectMapper: ObjectMapper,
-        properties: AligoAlimTalkProperties,
-        tokenStore: AligoAlimTalkTokenStore
-    ): AligoAlimTalkService {
-        return AligoAlimTalkService(restTemplate, objectMapper, properties, tokenStore)
+    fun aligoTalkService(
+        @Qualifier("aligoTalkRestTemplate") restTemplate: RestTemplate,
+        @Qualifier("aligoTalkObjectMapper") objectMapper: ObjectMapper,
+        properties: AligoTalkProperties,
+        tokenStore: AligoTalkTokenStore
+    ): AligoTalkService {
+        return AligoTalkService(restTemplate, objectMapper, properties, tokenStore)
     }
 }

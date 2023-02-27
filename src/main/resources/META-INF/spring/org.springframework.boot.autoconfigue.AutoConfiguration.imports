@@ -1,2 +1,2 @@
 herbaccara.boot.autoconfigure.aligo.sms.AligoSmsAutoConfiguration
-herbaccara.boot.autoconfigure.aligo.alimtalk.AligoAlimTalkAutoConfiguration
+herbaccara.boot.autoconfigure.aligo.talk.AligoTalkAutoConfiguration
