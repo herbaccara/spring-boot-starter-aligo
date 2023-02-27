@@ -38,6 +38,7 @@ class AligoSmsAutoConfiguration {
         interceptors: List<AligoSmsClientHttpRequestInterceptor>
     ): RestTemplate {
         return RestTemplateBuilder()
+            .rootUri(properties.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())
             .messageConverters(
                 StringHttpMessageConverter(StandardCharsets.UTF_8),
