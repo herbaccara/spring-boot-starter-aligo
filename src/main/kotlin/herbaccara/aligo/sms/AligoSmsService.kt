@@ -51,7 +51,7 @@ class AligoSmsService(
         val resultCode = json["result_code"].asInt()
         val message = json["message"].asText()
         if (resultCode < 0) {
-            throw AligoResponseException(resultCode, message)
+            throw AligoResponseException(resultCode, "($resultCode) $message")
         }
 
         (json as ObjectNode).apply {

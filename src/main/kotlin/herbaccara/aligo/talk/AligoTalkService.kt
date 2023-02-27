@@ -56,7 +56,7 @@ class AligoTalkService(
         val code = json["code"].asInt()
         val message = json["message"].asText()
         if (code < 0) {
-            throw AligoResponseException(code, message)
+            throw AligoResponseException(code, "($code) $message")
         }
 
         (json as ObjectNode).apply {

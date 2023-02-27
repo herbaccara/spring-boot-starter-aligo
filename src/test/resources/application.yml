@@ -1,13 +1,13 @@
 aligo:
   sms:
     enabled: true
-    key:
-    user-id:
+    key: test
+    user-id: test
     fail-on-unknown-properties: true
   talk:
     enabled: true
-    api-key:
-    user-id:
+    api-key: test
+    user-id: test
     fail-on-unknown-properties: true
 logging:
   level:
