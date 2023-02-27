@@ -226,9 +226,9 @@ class AligoTalkService(
         }
     }
 
-    // /akv10/alimtalk/send/
+    // FIXME: /akv10/alimtalk/send/
 
-    // /akv10/friend/send/
+    // FIXME: /akv10/friend/send/
 
     fun historyRequest(
         page: Int = 1,
