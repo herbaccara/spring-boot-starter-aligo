@@ -1,6 +1,8 @@
 package herbaccara.aligo.sms
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import herbaccara.aligo.sms.form.ListForm
 import herbaccara.aligo.sms.form.SendForm
 import herbaccara.aligo.sms.form.SendMassForm
@@ -14,19 +16,22 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
+import java.lang.RuntimeException
 import java.time.format.DateTimeFormatter
 
 class AligoSmsService(
     private val restTemplate: RestTemplate,
+    private val objectMapper: ObjectMapper,
     private val properties: AligoSmsProperties
 ) {
     private val localDateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     private val localTimeFormatter = DateTimeFormatter.ofPattern("HHmm")
 
-    private fun httpEntity(
+    private inline fun <reified T> postForObject(
+        uri: String,
         contentType: MediaType = MediaType.APPLICATION_FORM_URLENCODED,
         block: (map: MultiValueMap<String, Any>) -> Unit
-    ): HttpEntity<LinkedMultiValueMap<String, Any>> {
+    ): T {
         val headers = HttpHeaders().apply {
             this.contentType = contentType
         }
@@ -38,13 +43,23 @@ class AligoSmsService(
                 block(this)
             }
 
-        return HttpEntity(form, headers)
+        val httpEntity = HttpEntity(form, headers)
+
+        val json = restTemplate.postForObject<JsonNode>(uri, httpEntity)
+
+        val resultCode = json["result_code"].asInt()
+        val message = json["message"].asText()
+        if (resultCode < 0) {
+            throw RuntimeException(message)
+        }
+
+        return objectMapper.readValue(json.toString())
     }
 
     fun send(form: SendForm): JsonNode {
         val uri = "/send"
 
-        val httpEntity = httpEntity(MediaType.MULTIPART_FORM_DATA) { map ->
+        return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
             map.add("sender", form.sender)
             map.add("receiver", form.receivers.joinToString(",") { it.receiver })
             map.add("msg", form.msg)
@@ -70,14 +85,12 @@ class AligoSmsService(
                 map.add("testmode_yn", "Y")
             }
         }
-
-        return restTemplate.postForObject(uri, httpEntity)
     }
 
     fun sendMass(form: SendMassForm): JsonNode {
         val uri = "/send_mass"
 
-        val httpEntity = httpEntity(MediaType.MULTIPART_FORM_DATA) { map ->
+        return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
             map.add("sender", form.sender)
             form.receivers.forEachIndexed { i, (receiver, message) ->
                 map.add("rec_${i + 1}", receiver)
@@ -103,14 +116,12 @@ class AligoSmsService(
                 map.add("testmode_yn", "Y")
             }
         }
-
-        return restTemplate.postForObject(uri, httpEntity)
     }
 
     fun list(form: ListForm): JsonNode {
         val uri = "/list"
 
-        val httpEntity = httpEntity { map ->
+        return postForObject(uri) { map ->
             map.add("page", form.page)
             map.add("page_size", form.pageSize)
             if (form.startDate != null) {
@@ -120,37 +131,30 @@ class AligoSmsService(
                 map.add("limit_day", form.limitDay)
             }
         }
-
-        return restTemplate.postForObject(uri, httpEntity)
     }
 
     fun smsList(form: SmsListForm): JsonNode {
         val uri = "/sms_list"
 
-        val httpEntity = httpEntity { map ->
+        return postForObject(uri) { map ->
             map.add("mid", form.mid)
             map.add("page", form.page)
             map.add("page_size", form.pageSize)
         }
-
-        return restTemplate.postForObject(uri, httpEntity)
     }
 
-    fun remain() {
+    fun remain(): JsonNode {
         val uri = "/remain"
 
-        val httpEntity = httpEntity {}
-
-        return restTemplate.postForObject(uri, httpEntity)
+        return postForObject(uri) {
+        }
     }
 
-    fun cancel(mid: Int) {
+    fun cancel(mid: Int): JsonNode {
         val uri = "/cancel"
 
-        val httpEntity = httpEntity { map ->
+        return postForObject(uri) { map ->
             map.add("mid", mid)
         }
-
-        return restTemplate.postForObject(uri, httpEntity)
     }
 }

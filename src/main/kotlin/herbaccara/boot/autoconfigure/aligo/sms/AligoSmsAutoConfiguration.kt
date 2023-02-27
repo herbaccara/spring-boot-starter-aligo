@@ -56,8 +56,9 @@ class AligoSmsAutoConfiguration {
     @Bean
     fun aligoSmsService(
         @Qualifier("aligoSmsRestTemplate") restTemplate: RestTemplate,
+        @Qualifier("aligoSmsObjectMapper") objectMapper: ObjectMapper,
         properties: AligoSmsProperties
     ): AligoSmsService {
-        return AligoSmsService(restTemplate, properties)
+        return AligoSmsService(restTemplate, objectMapper, properties)
     }
 }
