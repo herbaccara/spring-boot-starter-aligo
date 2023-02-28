@@ -4,7 +4,7 @@ import java.io.File
 import java.time.LocalDateTime
 
 data class SendMassForm(
-    val sender: String,
+    val sender: PhoneNumber,
     val receivers: List<Receiver> = emptyList(),
     val msgType: MsgType,
     val title: String? = null,
@@ -12,5 +12,14 @@ data class SendMassForm(
     val images: List<File> = emptyList(),
     val testmode: Boolean = true
 ) {
-    data class Receiver(val receiver: String, val message: String)
+    companion object {
+        fun of(
+            sender: PhoneNumber,
+            vararg receiver: Receiver,
+            msgType: MsgType = MsgType.SMS,
+            testmode: Boolean = true
+        ): SendMassForm {
+            return SendMassForm(sender, receiver.toList(), msgType, testmode = testmode)
+        }
+    }
 }
