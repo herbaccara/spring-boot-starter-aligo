@@ -3,7 +3,7 @@ package herbaccara.boot.autoconfigure.aligo.talk
 import org.springframework.context.annotation.Import
 import java.lang.annotation.*
 
-@Target
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
 @Import(AligoTalkAutoConfiguration::class)
