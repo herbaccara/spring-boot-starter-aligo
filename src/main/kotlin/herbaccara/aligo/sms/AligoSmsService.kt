@@ -10,6 +10,10 @@ import herbaccara.aligo.sms.form.ListForm
 import herbaccara.aligo.sms.form.SendForm
 import herbaccara.aligo.sms.form.SendMassForm
 import herbaccara.aligo.sms.form.SmsListForm
+import herbaccara.aligo.sms.model.ListResult
+import herbaccara.aligo.sms.model.Remain
+import herbaccara.aligo.sms.model.SendResult
+import herbaccara.aligo.sms.model.SmsListResult
 import herbaccara.boot.autoconfigure.aligo.sms.AligoSmsProperties
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
@@ -62,12 +66,12 @@ class AligoSmsService(
         return objectMapper.readValue(json.toString())
     }
 
-    fun send(form: SendForm): JsonNode {
+    fun send(form: SendForm): SendResult {
         val uri = "/send/"
 
         return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
-            map.add("sender", form.sender)
-            map.add("receiver", form.receivers.joinToString(",") { it.receiver })
+            map.add("sender", form.sender.value)
+            map.add("receiver", form.receivers.keys.joinToString(",") { phoneNumber -> phoneNumber.value })
             map.add("msg", form.msg)
             if (form.msgType != null) {
                 map.add("msg_type", form.msgType.name)
@@ -75,8 +79,12 @@ class AligoSmsService(
             if (form.title != null) {
                 map.add("title", form.title)
             }
-            map.add("destination", form.receivers.joinToString(",") { it.receiver + "|" + (it.userName ?: "") })
-
+            map.add(
+                "destination",
+                form.receivers.map { (phoneNumber, customerName) ->
+                    "${phoneNumber.value}|${customerName?.value ?: ""}"
+                }.joinToString(",")
+            )
             if (form.reservationDateTIme != null) {
                 val (localDate, localTime) = form.reservationDateTIme.let {
                     it.toLocalDate() to it.toLocalTime()
@@ -93,14 +101,14 @@ class AligoSmsService(
         }
     }
 
-    fun sendMass(form: SendMassForm): JsonNode {
+    fun sendMass(form: SendMassForm): SendResult {
         val uri = "/send_mass/"
 
         return postForObject(uri, MediaType.MULTIPART_FORM_DATA) { map ->
-            map.add("sender", form.sender)
+            map.add("sender", form.sender.value)
             form.receivers.forEachIndexed { i, (receiver, message) ->
-                map.add("rec_${i + 1}", receiver)
-                map.add("msg_${i + 1}", message)
+                map.add("rec_${i + 1}", receiver.value)
+                map.add("msg_${i + 1}", message.value)
             }
             map.add("cnt", form.receivers.size)
             if (form.title != null) {
@@ -124,11 +132,11 @@ class AligoSmsService(
         }
     }
 
-    fun list(page: Int = 1, pageSize: Int = 30, startDate: LocalDate? = null, limitDay: Int? = null): JsonNode {
+    fun list(page: Int = 1, pageSize: Int = 30, startDate: LocalDate? = null, limitDay: Int? = null): ListResult {
         return list(ListForm(page, pageSize, startDate, limitDay))
     }
 
-    fun list(form: ListForm): JsonNode {
+    fun list(form: ListForm): ListResult {
         val uri = "/list/"
 
         return postForObject(uri) { map ->
@@ -143,11 +151,11 @@ class AligoSmsService(
         }
     }
 
-    fun smsList(mid: Int, page: Int = 1, pageSize: Int = 30): JsonNode {
-        return smsList(mid, page, pageSize)
+    fun smsList(mid: Int, page: Int = 1, pageSize: Int = 30): SmsListResult {
+        return smsList(SmsListForm(mid, page, pageSize))
     }
 
-    fun smsList(form: SmsListForm): JsonNode {
+    fun smsList(form: SmsListForm): SmsListResult {
         val uri = "/sms_list/"
 
         return postForObject(uri) { map ->
@@ -157,7 +165,7 @@ class AligoSmsService(
         }
     }
 
-    fun remain(): JsonNode {
+    fun remain(): Remain {
         val uri = "/remain/"
 
         return postForObject(uri)
