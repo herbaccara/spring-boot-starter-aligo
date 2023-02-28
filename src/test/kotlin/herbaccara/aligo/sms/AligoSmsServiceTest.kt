@@ -22,7 +22,7 @@ class AligoSmsServiceTest {
     @Autowired
     lateinit var aligoSmsService: AligoSmsService
 
-    private val sender: PhoneNumber = PhoneNumber("01036589943")
+    private val sender: PhoneNumber = PhoneNumber("010789456")
     private val imageFile =
         AligoSmsServiceTest::class.java.getResource("/20180703190744-rollsafe-meme.jpeg")!!.let { File(it.path) }
 
