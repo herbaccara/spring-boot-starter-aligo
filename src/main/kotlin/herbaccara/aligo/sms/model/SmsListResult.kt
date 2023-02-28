@@ -21,8 +21,10 @@ data class SmsListResult(
         @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         val regDate: LocalDateTime,
         @field:JsonProperty("send_date")
-        val sendDate: String? = null,
+        @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        val sendDate: LocalDateTime? = null,
         @field:JsonProperty("reserve_date")
-        val reserveDate: String? = null
+        @field:JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        val reserveDate: LocalDateTime? = null
     )
 }
