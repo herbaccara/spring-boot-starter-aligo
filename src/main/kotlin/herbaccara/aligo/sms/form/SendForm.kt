@@ -14,11 +14,18 @@ data class SendForm(
     val testmode: Boolean = true
 ) {
     companion object {
-        fun of(sender: PhoneNumber, receiver: PhoneNumber, message: Message, customerName: CustomerName? = null): SendForm {
+        fun of(
+            sender: PhoneNumber,
+            receiver: PhoneNumber,
+            message: Message,
+            customerName: CustomerName? = null,
+            testmode: Boolean = true
+        ): SendForm {
             return SendForm(
                 sender,
                 mapOf(receiver to customerName),
-                message
+                message,
+                testmode = testmode
             )
         }
     }
