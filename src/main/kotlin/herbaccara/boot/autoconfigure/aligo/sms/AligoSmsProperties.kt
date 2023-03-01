@@ -7,7 +7,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConstructorBinding
 data class AligoSmsProperties(
     val enabled: Boolean = true,
-    val key: String,
-    val userId: String,
     val rootUri: String = "https://apis.aligo.in"
 )

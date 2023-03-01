@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.aligo.talk.AligoTalkService
 import herbaccara.aligo.talk.store.AligoTalkInMemoryTokenStore
 import herbaccara.aligo.talk.store.AligoTalkTokenStore
+import herbaccara.boot.autoconfigure.aligo.AligoProperties
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -18,7 +19,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 @AutoConfiguration
-@EnableConfigurationProperties(AligoTalkProperties::class)
+@EnableConfigurationProperties(AligoProperties::class)
 @ConditionalOnProperty(prefix = "aligo.talk", value = ["enabled"], havingValue = "true")
 class AligoTalkAutoConfiguration {
 
@@ -41,11 +42,11 @@ class AligoTalkAutoConfiguration {
         objectMapper: ObjectMapper,
         customizers: List<AligoTalkRestTemplateBuilderCustomizer>,
         interceptors: List<AligoTalkClientHttpRequestInterceptor>,
-        properties: AligoTalkProperties,
+        properties: AligoProperties,
         tokenStore: AligoTalkTokenStore
     ): AligoTalkService {
         val restTemplate = RestTemplateBuilder()
-            .rootUri(properties.rootUri)
+            .rootUri(properties.talk.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())
             .messageConverters(
                 StringHttpMessageConverter(StandardCharsets.UTF_8),

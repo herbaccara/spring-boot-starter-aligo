@@ -3,6 +3,7 @@ package herbaccara.boot.autoconfigure.aligo.sms
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.aligo.sms.AligoSmsService
+import herbaccara.boot.autoconfigure.aligo.AligoProperties
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -16,7 +17,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 @AutoConfiguration
-@EnableConfigurationProperties(AligoSmsProperties::class)
+@EnableConfigurationProperties(AligoProperties::class)
 @ConditionalOnProperty(prefix = "aligo.sms", value = ["enabled"], havingValue = "true")
 class AligoSmsAutoConfiguration {
 
@@ -33,10 +34,10 @@ class AligoSmsAutoConfiguration {
         objectMapper: ObjectMapper,
         customizers: List<AligoSmsRestTemplateBuilderCustomizer>,
         interceptors: List<AligoSmsClientHttpRequestInterceptor>,
-        properties: AligoSmsProperties
+        properties: AligoProperties
     ): AligoSmsService {
         val restTemplate = RestTemplateBuilder()
-            .rootUri(properties.rootUri)
+            .rootUri(properties.sms.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())
             .messageConverters(
                 StringHttpMessageConverter(StandardCharsets.UTF_8),

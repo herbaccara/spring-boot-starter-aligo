@@ -7,9 +7,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import herbaccara.aligo.Constants
 import herbaccara.aligo.exception.AligoResponseException
 import herbaccara.aligo.talk.form.template.Template
+import herbaccara.aligo.talk.model.Category
 import herbaccara.aligo.talk.model.token.AligoTalkToken
 import herbaccara.aligo.talk.store.AligoTalkTokenStore
-import herbaccara.boot.autoconfigure.aligo.talk.AligoTalkProperties
+import herbaccara.boot.autoconfigure.aligo.AligoProperties
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -20,11 +21,12 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import java.time.Duration
 import java.time.LocalDate
+import java.util.*
 
 class AligoTalkService(
     private val restTemplate: RestTemplate,
     private val objectMapper: ObjectMapper,
-    private val properties: AligoTalkProperties,
+    private val properties: AligoProperties,
     private val tokenStore: AligoTalkTokenStore
 ) {
     private inline fun <reified T> postForObject(
@@ -42,7 +44,7 @@ class AligoTalkService(
                 add("apikey", properties.apiKey)
                 add("userid", properties.userId)
                 if (withToken) {
-                    add("token", tokenStore.load()?.urlEncodedToken())
+                    add("token", tokenStore.load()?.token)
                 }
                 block(this)
             }
@@ -67,7 +69,7 @@ class AligoTalkService(
         return objectMapper.readValue(json.toString())
     }
 
-    fun token(duration: Duration = properties.defaultTokenExpirationTime): AligoTalkToken {
+    fun token(duration: Duration = properties.talk.defaultTokenExpirationTime): AligoTalkToken {
         val seconds = duration.seconds
         val uri = "/akv10/token/create/$seconds/s/"
 
@@ -80,17 +82,19 @@ class AligoTalkService(
     private fun <T> recover(block: () -> T): T {
         return runCatching { block() }
             .recoverCatching { exception ->
-                // FIXME : -99 가 토큰 만료인지 확인 해야 한다.
-                if (exception is AligoResponseException && exception.resultCode == -99) {
+                // (-107) 사용할수 없는 토큰 입니다. - 전송중 소실된 토큰 문자열
+                // (-10) 토큰(=token) 파라메더가 전달되지 않았습니다.
+                val recoverable = listOf(-10, -107)
+                if (exception is AligoResponseException && recoverable.contains(exception.resultCode)) {
                     token()
-                    block()
+                    return block()
                 }
                 throw exception
             }
             .getOrThrow()
     }
 
-    fun category(): JsonNode {
+    fun category(): Category {
         return recover {
             val uri = "/akv10/category/"
             postForObject(uri)

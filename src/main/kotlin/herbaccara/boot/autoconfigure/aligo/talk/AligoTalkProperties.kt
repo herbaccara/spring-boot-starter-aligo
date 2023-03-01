@@ -8,8 +8,6 @@ import java.time.Duration
 @ConstructorBinding
 data class AligoTalkProperties(
     val enabled: Boolean = true,
-    val apiKey: String,
-    val userId: String,
     val rootUri: String = "https://kakaoapi.aligo.in",
     val defaultTokenExpirationTime: Duration = Duration.ofDays(1)
 )

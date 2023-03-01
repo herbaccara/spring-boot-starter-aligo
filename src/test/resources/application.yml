@@ -1,12 +1,13 @@
 aligo:
+  api-key: test
+  user-id: test
   sms:
     enabled: true
-    key: test
-    user-id: test
+    root-uri: https://apis.aligo.in
   talk:
     enabled: true
-    api-key: test
-    user-id: test
+    root-uri: https://kakaoapi.aligo.in
+    default-token-expiration-time: 60s
 logging:
   level:
     root: info

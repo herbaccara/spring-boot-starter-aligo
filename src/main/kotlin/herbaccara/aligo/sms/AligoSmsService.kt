@@ -14,7 +14,7 @@ import herbaccara.aligo.sms.model.ListResult
 import herbaccara.aligo.sms.model.Remain
 import herbaccara.aligo.sms.model.SendResult
 import herbaccara.aligo.sms.model.SmsListResult
-import herbaccara.boot.autoconfigure.aligo.sms.AligoSmsProperties
+import herbaccara.boot.autoconfigure.aligo.AligoProperties
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -28,7 +28,7 @@ import java.time.LocalDate
 class AligoSmsService(
     private val restTemplate: RestTemplate,
     private val objectMapper: ObjectMapper,
-    private val properties: AligoSmsProperties
+    private val properties: AligoProperties
 ) {
     private inline fun <reified T> postForObject(
         uri: String,
@@ -41,7 +41,7 @@ class AligoSmsService(
 
         val form = LinkedMultiValueMap<String, Any>()
             .apply {
-                add("key", properties.key)
+                add("key", properties.apiKey)
                 add("user_id", properties.userId)
                 block(this)
             }
