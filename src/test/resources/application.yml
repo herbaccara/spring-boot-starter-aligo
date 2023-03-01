@@ -3,12 +3,10 @@ aligo:
     enabled: true
     key: test
     user-id: test
-    fail-on-unknown-properties: true
   talk:
     enabled: true
     api-key: test
     user-id: test
-    fail-on-unknown-properties: true
 logging:
   level:
     root: info

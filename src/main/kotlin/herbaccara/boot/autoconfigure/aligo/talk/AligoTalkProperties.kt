@@ -11,6 +11,5 @@ data class AligoTalkProperties(
     val apiKey: String,
     val userId: String,
     val rootUri: String = "https://kakaoapi.aligo.in",
-    val defaultTokenExpirationTime: Duration = Duration.ofDays(1),
-    val failOnUnknownProperties: Boolean = false
+    val defaultTokenExpirationTime: Duration = Duration.ofDays(1)
 )

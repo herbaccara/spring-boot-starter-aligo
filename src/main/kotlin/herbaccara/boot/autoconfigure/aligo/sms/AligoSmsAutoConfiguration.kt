@@ -1,11 +1,10 @@
 package herbaccara.boot.autoconfigure.aligo.sms
 
-import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.aligo.sms.AligoSmsService
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter
-import org.springframework.web.client.RestTemplate
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -22,22 +20,22 @@ import java.util.*
 @ConditionalOnProperty(prefix = "aligo.sms", value = ["enabled"], havingValue = "true")
 class AligoSmsAutoConfiguration {
 
-    @Bean("aligoSmsObjectMapper")
-    fun objectMapper(properties: AligoSmsProperties): ObjectMapper {
+    @Bean
+    @ConditionalOnMissingBean
+    fun objectMapper(): ObjectMapper {
         return jacksonObjectMapper().apply {
             findAndRegisterModules()
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, properties.failOnUnknownProperties)
         }
     }
 
-    @Bean("aligoSmsRestTemplate")
-    fun restTemplate(
-        properties: AligoSmsProperties,
-        @Qualifier("aligoSmsObjectMapper") objectMapper: ObjectMapper,
+    @Bean
+    fun aligoSmsService(
+        objectMapper: ObjectMapper,
         customizers: List<AligoSmsRestTemplateBuilderCustomizer>,
-        interceptors: List<AligoSmsClientHttpRequestInterceptor>
-    ): RestTemplate {
-        return RestTemplateBuilder()
+        interceptors: List<AligoSmsClientHttpRequestInterceptor>,
+        properties: AligoSmsProperties
+    ): AligoSmsService {
+        val restTemplate = RestTemplateBuilder()
             .rootUri(properties.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())
             .messageConverters(
@@ -51,14 +49,7 @@ class AligoSmsAutoConfiguration {
                 }
             }
             .build()
-    }
 
-    @Bean
-    fun aligoSmsService(
-        @Qualifier("aligoSmsRestTemplate") restTemplate: RestTemplate,
-        @Qualifier("aligoSmsObjectMapper") objectMapper: ObjectMapper,
-        properties: AligoSmsProperties
-    ): AligoSmsService {
         return AligoSmsService(restTemplate, objectMapper, properties)
     }
 }
