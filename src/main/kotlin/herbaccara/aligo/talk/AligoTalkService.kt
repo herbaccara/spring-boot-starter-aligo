@@ -69,6 +69,7 @@ class AligoTalkService(
         return objectMapper.readValue(json.toString())
     }
 
+    @JvmOverloads
     fun token(duration: Duration = properties.talk.defaultTokenExpirationTime): AligoTalkToken {
         val seconds = duration.seconds
         val uri = "/akv10/token/create/$seconds/s/"
@@ -131,6 +132,7 @@ class AligoTalkService(
         }
     }
 
+    @JvmOverloads
     fun profileList(plusId: String? = null, senderKey: String? = null): JsonNode {
         return recover {
             val uri = "/akv10/profile/list/"
@@ -146,6 +148,7 @@ class AligoTalkService(
         }
     }
 
+    @JvmOverloads
     fun templateList(senderKey: String, templateCode: String? = null): JsonNode {
         return recover {
             val uri = "/akv10/template/list/"
@@ -237,6 +240,7 @@ class AligoTalkService(
 
     // FIXME: /akv10/friend/send/
 
+    @JvmOverloads
     fun historyRequest(
         page: Int = 1,
         limit: Int = 50,
@@ -259,6 +263,7 @@ class AligoTalkService(
         }
     }
 
+    @JvmOverloads
     fun historyDetail(
         mid: String,
         page: Int = 1,
