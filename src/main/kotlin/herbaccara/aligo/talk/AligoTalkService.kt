@@ -8,6 +8,7 @@ import herbaccara.aligo.Constants
 import herbaccara.aligo.exception.AligoResponseException
 import herbaccara.aligo.talk.form.template.Template
 import herbaccara.aligo.talk.model.Category
+import herbaccara.aligo.talk.model.HeartInfo
 import herbaccara.aligo.talk.model.token.AligoTalkToken
 import herbaccara.aligo.talk.store.AligoTalkTokenStore
 import herbaccara.boot.autoconfigure.aligo.AligoProperties
@@ -21,7 +22,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForObject
 import java.time.Duration
 import java.time.LocalDate
-import java.util.*
 
 class AligoTalkService(
     private val restTemplate: RestTemplate,
@@ -97,7 +97,9 @@ class AligoTalkService(
     fun category(): Category {
         return recover {
             val uri = "/akv10/category/"
-            postForObject(uri)
+
+            val json = postForObject<JsonNode>(uri)
+            objectMapper.readValue(json["data"].toString())
         }
     }
 
@@ -273,11 +275,12 @@ class AligoTalkService(
         }
     }
 
-    fun heartInfo(): JsonNode {
+    fun heartInfo(): HeartInfo {
         return recover {
             val uri = "/akv10/heartinfo/"
 
-            postForObject(uri)
+            val json = postForObject<JsonNode>(uri)
+            objectMapper.readValue(json["list"].toString())
         }
     }
 

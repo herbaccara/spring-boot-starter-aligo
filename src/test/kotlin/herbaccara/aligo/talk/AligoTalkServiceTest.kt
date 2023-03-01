@@ -36,6 +36,12 @@ class AligoTalkServiceTest {
     }
 
     @Test
+    fun heartInfo() {
+        val heartInfo = aligoTalkService.heartInfo()
+        println(heartInfo)
+    }
+
+    @Test
     fun plusId() {
         val s = "testId"
         assertEquals(s.plusId(), "@$s")
