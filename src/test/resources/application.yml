@@ -1,6 +1,6 @@
 aligo:
-  api-key: test
-  user-id: test
+  api-key: m9hrpkwyenpvbplijh071t49r3rcfd9c
+  user-id: allbegray
   sms:
     enabled: true
     root-uri: https://apis.aligo.in

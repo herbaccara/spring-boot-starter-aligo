@@ -1,7 +1,9 @@
 package herbaccara.aligo.sms.form
 
+import herbaccara.aligo.Constants
+
 data class SmsListForm(
     val mid: Int,
-    val page: Int = 1,
-    val pageSize: Int = 30 // 30 ~ 500
+    val page: Int = Constants.defaultPage,
+    val pageSize: Int = Constants.defaultPageSize
 )

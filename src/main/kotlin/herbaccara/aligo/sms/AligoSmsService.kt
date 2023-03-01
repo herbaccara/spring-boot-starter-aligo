@@ -133,7 +133,7 @@ class AligoSmsService(
     }
 
     @JvmOverloads
-    fun list(page: Int = 1, pageSize: Int = 30, startDate: LocalDate? = null, limitDay: Int? = null): ListResult {
+    fun list(page: Int = Constants.defaultPage, pageSize: Int = Constants.defaultPageSize, startDate: LocalDate? = null, limitDay: Int? = null): ListResult {
         return list(ListForm(page, pageSize, startDate, limitDay))
     }
 
@@ -153,7 +153,7 @@ class AligoSmsService(
     }
 
     @JvmOverloads
-    fun smsList(mid: Int, page: Int = 1, pageSize: Int = 30): SmsListResult {
+    fun smsList(mid: Int, page: Int = Constants.defaultPage, pageSize: Int = Constants.defaultPageSize): SmsListResult {
         return smsList(SmsListForm(mid, page, pageSize))
     }
 

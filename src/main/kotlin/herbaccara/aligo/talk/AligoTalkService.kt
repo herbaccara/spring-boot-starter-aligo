@@ -242,8 +242,8 @@ class AligoTalkService(
 
     @JvmOverloads
     fun historyRequest(
-        page: Int = 1,
-        limit: Int = 50,
+        page: Int = Constants.defaultPage,
+        limit: Int = Constants.defaultLimit,
         startDate: LocalDate? = null,
         endDate: LocalDate? = null
     ): JsonNode {
@@ -266,8 +266,8 @@ class AligoTalkService(
     @JvmOverloads
     fun historyDetail(
         mid: String,
-        page: Int = 1,
-        limit: Int = 50
+        page: Int = Constants.defaultPage,
+        limit: Int = Constants.defaultLimit
     ): JsonNode {
         return recover {
             val uri = "/akv10/history/detail/"
