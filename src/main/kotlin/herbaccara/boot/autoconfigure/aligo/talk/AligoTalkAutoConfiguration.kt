@@ -1,6 +1,6 @@
 package herbaccara.boot.autoconfigure.aligo.talk
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.aligo.talk.AligoTalkService
 import herbaccara.aligo.talk.store.AligoTalkInMemoryTokenStore
@@ -25,26 +25,23 @@ class AligoTalkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun objectMapper(): ObjectMapper {
-        return jacksonObjectMapper().apply {
-            findAndRegisterModules()
-        }
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(AligoTalkTokenStore::class)
     fun aligoTalkTokenStore(): AligoTalkTokenStore {
         return AligoTalkInMemoryTokenStore()
     }
 
     @Bean
+    @ConditionalOnMissingBean
     fun aligoTalkService(
-        objectMapper: ObjectMapper,
         customizers: List<AligoTalkRestTemplateBuilderCustomizer>,
         interceptors: List<AligoTalkClientHttpRequestInterceptor>,
         properties: AligoProperties,
         tokenStore: AligoTalkTokenStore
     ): AligoTalkService {
+        val objectMapper = jacksonObjectMapper().apply {
+            findAndRegisterModules()
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, properties.failOnUnknownProperties)
+        }
+
         val restTemplate = RestTemplateBuilder()
             .rootUri(properties.talk.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())

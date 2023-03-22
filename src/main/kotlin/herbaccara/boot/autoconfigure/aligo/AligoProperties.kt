@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 data class AligoProperties(
     val apiKey: String,
     val userId: String,
+    val failOnUnknownProperties: Boolean = false,
     val sms: AligoSmsProperties = AligoSmsProperties(),
     val talk: AligoTalkProperties = AligoTalkProperties()
 )

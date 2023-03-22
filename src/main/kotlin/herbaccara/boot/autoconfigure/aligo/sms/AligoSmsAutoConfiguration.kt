@@ -1,6 +1,6 @@
 package herbaccara.boot.autoconfigure.aligo.sms
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import herbaccara.aligo.sms.AligoSmsService
 import herbaccara.boot.autoconfigure.aligo.AligoProperties
@@ -23,19 +23,16 @@ class AligoSmsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun objectMapper(): ObjectMapper {
-        return jacksonObjectMapper().apply {
-            findAndRegisterModules()
-        }
-    }
-
-    @Bean
     fun aligoSmsService(
-        objectMapper: ObjectMapper,
         customizers: List<AligoSmsRestTemplateBuilderCustomizer>,
         interceptors: List<AligoSmsClientHttpRequestInterceptor>,
         properties: AligoProperties
     ): AligoSmsService {
+        val objectMapper = jacksonObjectMapper().apply {
+            findAndRegisterModules()
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, properties.failOnUnknownProperties)
+        }
+
         val restTemplate = RestTemplateBuilder()
             .rootUri(properties.sms.rootUri)
             .additionalInterceptors(*interceptors.toTypedArray())
