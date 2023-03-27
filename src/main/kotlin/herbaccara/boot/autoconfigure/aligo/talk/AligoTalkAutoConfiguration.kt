@@ -20,7 +20,7 @@ import java.util.*
 
 @AutoConfiguration
 @EnableConfigurationProperties(AligoProperties::class)
-@ConditionalOnProperty(prefix = "aligo.talk", value = ["enabled"], havingValue = "true")
+@ConditionalOnProperty(prefix = "aligo.talk", value = ["enabled"], havingValue = "true", matchIfMissing = true)
 class AligoTalkAutoConfiguration {
 
     @Bean

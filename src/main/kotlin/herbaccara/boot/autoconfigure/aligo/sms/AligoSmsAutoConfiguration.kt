@@ -18,7 +18,7 @@ import java.util.*
 
 @AutoConfiguration
 @EnableConfigurationProperties(AligoProperties::class)
-@ConditionalOnProperty(prefix = "aligo.sms", value = ["enabled"], havingValue = "true")
+@ConditionalOnProperty(prefix = "aligo.sms", value = ["enabled"], havingValue = "true", matchIfMissing = true)
 class AligoSmsAutoConfiguration {
 
     @Bean
